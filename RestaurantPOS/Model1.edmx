@@ -1,0 +1,583 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="restoranDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="korisnik">
+          <Key>
+            <PropertyRef Name="korisnikID" />
+          </Key>
+          <Property Name="korisnikID" Type="int" Nullable="false" />
+          <Property Name="korisnickoIme" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="lozinka" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="ime" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="prezime" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="tipKorisnika" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="oib" Type="char" MaxLength="11" />
+        </EntityType>
+        <EntityType Name="meni">
+          <Key>
+            <PropertyRef Name="idMeni" />
+          </Key>
+          <Property Name="idMeni" Type="int" Nullable="false" />
+          <Property Name="naziv" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="datum" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="porez">
+          <Key>
+            <PropertyRef Name="idPoreza" />
+          </Key>
+          <Property Name="idPoreza" Type="int" Nullable="false" />
+          <Property Name="naziv" Type="varchar" MaxLength="50" />
+          <Property Name="stopa" Type="decimal" Precision="3" Scale="2" />
+        </EntityType>
+        <EntityType Name="pravneOsobe">
+          <Key>
+            <PropertyRef Name="oibPravneOsobe" />
+          </Key>
+          <Property Name="oibPravneOsobe" Type="char" MaxLength="11" Nullable="false" />
+          <Property Name="naziv" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="adresa" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="proizvod">
+          <Key>
+            <PropertyRef Name="idProizvod" />
+          </Key>
+          <Property Name="idProizvod" Type="int" Nullable="false" />
+          <Property Name="naziv" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="osnovica" Type="decimal" Precision="15" Scale="2" />
+          <Property Name="idPoreza" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'C:\USERS\PATRICK\DESKTOP\ANTONIOSTEFANCIC\RESTAURANTPOS\RESTAURANTPOS\RESTORANDB.MDF.dbo.proizvodiMenija' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="proizvodiMenija">
+          <Key>
+            <PropertyRef Name="idProizvod" />
+            <PropertyRef Name="idMeni" />
+          </Key>
+          <Property Name="idProizvod" Type="int" Nullable="false" />
+          <Property Name="idMeni" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="racun">
+          <Key>
+            <PropertyRef Name="idRacun" />
+          </Key>
+          <Property Name="idRacun" Type="int" Nullable="false" />
+          <Property Name="JIR" Type="char" MaxLength="36" />
+          <Property Name="vrijeme" Type="varchar" MaxLength="50" />
+          <Property Name="ukupnoPrijePoreza" Type="decimal" Precision="15" Scale="2" />
+          <Property Name="ukupnoPoslijePoreza" Type="decimal" Precision="15" Scale="2" />
+          <Property Name="idKorisnik" Type="int" Nullable="false" />
+          <Property Name="oibPravneOsobe" Type="char" MaxLength="11" />
+          <Property Name="idPoreza" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'C:\USERS\PATRICK\DESKTOP\ANTONIOSTEFANCIC\RESTAURANTPOS\RESTAURANTPOS\RESTORANDB.MDF.dbo.stavkeRacuna' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="stavkeRacuna">
+          <Key>
+            <PropertyRef Name="idStavkeRacuna" />
+            <PropertyRef Name="idRacun" />
+          </Key>
+          <Property Name="idStavkeRacuna" Type="int" Nullable="false" />
+          <Property Name="idRacun" Type="int" Nullable="false" />
+          <Property Name="idProizvod" Type="int" />
+          <Property Name="idMeni" Type="int" />
+        </EntityType>
+        <Association Name="FK_proizvod_porez">
+          <End Role="porez" Type="Self.porez" Multiplicity="0..1" />
+          <End Role="proizvod" Type="Self.proizvod" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="porez">
+              <PropertyRef Name="idPoreza" />
+            </Principal>
+            <Dependent Role="proizvod">
+              <PropertyRef Name="idPoreza" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_proizvodiMenija_Meni">
+          <End Role="meni" Type="Self.meni" Multiplicity="1" />
+          <End Role="proizvodiMenija" Type="Self.proizvodiMenija" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="meni">
+              <PropertyRef Name="idMeni" />
+            </Principal>
+            <Dependent Role="proizvodiMenija">
+              <PropertyRef Name="idMeni" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_proizvodiMenija_proizvod">
+          <End Role="proizvod" Type="Self.proizvod" Multiplicity="1" />
+          <End Role="proizvodiMenija" Type="Self.proizvodiMenija" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="proizvod">
+              <PropertyRef Name="idProizvod" />
+            </Principal>
+            <Dependent Role="proizvodiMenija">
+              <PropertyRef Name="idProizvod" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_racun_korisnik">
+          <End Role="korisnik" Type="Self.korisnik" Multiplicity="1" />
+          <End Role="racun" Type="Self.racun" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="korisnik">
+              <PropertyRef Name="korisnikID" />
+            </Principal>
+            <Dependent Role="racun">
+              <PropertyRef Name="idKorisnik" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_racun_porez">
+          <End Role="porez" Type="Self.porez" Multiplicity="0..1" />
+          <End Role="racun" Type="Self.racun" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="porez">
+              <PropertyRef Name="idPoreza" />
+            </Principal>
+            <Dependent Role="racun">
+              <PropertyRef Name="idPoreza" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_racun_pravneOsobe">
+          <End Role="pravneOsobe" Type="Self.pravneOsobe" Multiplicity="0..1" />
+          <End Role="racun" Type="Self.racun" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="pravneOsobe">
+              <PropertyRef Name="oibPravneOsobe" />
+            </Principal>
+            <Dependent Role="racun">
+              <PropertyRef Name="oibPravneOsobe" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_stavkeRacuna_meni">
+          <End Role="meni" Type="Self.meni" Multiplicity="0..1" />
+          <End Role="stavkeRacuna" Type="Self.stavkeRacuna" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="meni">
+              <PropertyRef Name="idMeni" />
+            </Principal>
+            <Dependent Role="stavkeRacuna">
+              <PropertyRef Name="idMeni" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_stavkeRacuna_proizvod">
+          <End Role="proizvod" Type="Self.proizvod" Multiplicity="0..1" />
+          <End Role="stavkeRacuna" Type="Self.stavkeRacuna" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="proizvod">
+              <PropertyRef Name="idProizvod" />
+            </Principal>
+            <Dependent Role="stavkeRacuna">
+              <PropertyRef Name="idProizvod" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_stavkeRacuna_racun">
+          <End Role="racun" Type="Self.racun" Multiplicity="1" />
+          <End Role="stavkeRacuna" Type="Self.stavkeRacuna" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="racun">
+              <PropertyRef Name="idRacun" />
+            </Principal>
+            <Dependent Role="stavkeRacuna">
+              <PropertyRef Name="idRacun" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="restoranDBModelStoreContainer">
+          <EntitySet Name="korisnik" EntityType="Self.korisnik" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="meni" EntityType="Self.meni" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="porez" EntityType="Self.porez" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="pravneOsobe" EntityType="Self.pravneOsobe" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="proizvod" EntityType="Self.proizvod" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="racun" EntityType="Self.racun" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="proizvodiMenija" EntityType="Self.proizvodiMenija" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [proizvodiMenija].[idProizvod] AS [idProizvod], 
+    [proizvodiMenija].[idMeni] AS [idMeni]
+    FROM [dbo].[proizvodiMenija] AS [proizvodiMenija]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="stavkeRacuna" EntityType="Self.stavkeRacuna" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [stavkeRacuna].[idStavkeRacuna] AS [idStavkeRacuna], 
+    [stavkeRacuna].[idRacun] AS [idRacun], 
+    [stavkeRacuna].[idProizvod] AS [idProizvod], 
+    [stavkeRacuna].[idMeni] AS [idMeni]
+    FROM [dbo].[stavkeRacuna] AS [stavkeRacuna]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_proizvod_porez" Association="Self.FK_proizvod_porez">
+            <End Role="porez" EntitySet="porez" />
+            <End Role="proizvod" EntitySet="proizvod" />
+          </AssociationSet>
+          <AssociationSet Name="FK_proizvodiMenija_Meni" Association="Self.FK_proizvodiMenija_Meni">
+            <End Role="meni" EntitySet="meni" />
+            <End Role="proizvodiMenija" EntitySet="proizvodiMenija" />
+          </AssociationSet>
+          <AssociationSet Name="FK_proizvodiMenija_proizvod" Association="Self.FK_proizvodiMenija_proizvod">
+            <End Role="proizvod" EntitySet="proizvod" />
+            <End Role="proizvodiMenija" EntitySet="proizvodiMenija" />
+          </AssociationSet>
+          <AssociationSet Name="FK_racun_korisnik" Association="Self.FK_racun_korisnik">
+            <End Role="korisnik" EntitySet="korisnik" />
+            <End Role="racun" EntitySet="racun" />
+          </AssociationSet>
+          <AssociationSet Name="FK_racun_porez" Association="Self.FK_racun_porez">
+            <End Role="porez" EntitySet="porez" />
+            <End Role="racun" EntitySet="racun" />
+          </AssociationSet>
+          <AssociationSet Name="FK_racun_pravneOsobe" Association="Self.FK_racun_pravneOsobe">
+            <End Role="pravneOsobe" EntitySet="pravneOsobe" />
+            <End Role="racun" EntitySet="racun" />
+          </AssociationSet>
+          <AssociationSet Name="FK_stavkeRacuna_meni" Association="Self.FK_stavkeRacuna_meni">
+            <End Role="meni" EntitySet="meni" />
+            <End Role="stavkeRacuna" EntitySet="stavkeRacuna" />
+          </AssociationSet>
+          <AssociationSet Name="FK_stavkeRacuna_proizvod" Association="Self.FK_stavkeRacuna_proizvod">
+            <End Role="proizvod" EntitySet="proizvod" />
+            <End Role="stavkeRacuna" EntitySet="stavkeRacuna" />
+          </AssociationSet>
+          <AssociationSet Name="FK_stavkeRacuna_racun" Association="Self.FK_stavkeRacuna_racun">
+            <End Role="racun" EntitySet="racun" />
+            <End Role="stavkeRacuna" EntitySet="stavkeRacuna" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="restoranDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="korisnik">
+          <Key>
+            <PropertyRef Name="korisnikID" />
+          </Key>
+          <Property Name="korisnikID" Type="Int32" Nullable="false" />
+          <Property Name="korisnickoIme" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="lozinka" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ime" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="prezime" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="tipKorisnika" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="oib" Type="String" MaxLength="11" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="racuns" Relationship="Self.FK_racun_korisnik" FromRole="korisnik" ToRole="racun" />
+        </EntityType>
+        <EntityType Name="meni">
+          <Key>
+            <PropertyRef Name="idMeni" />
+          </Key>
+          <Property Name="idMeni" Type="Int32" Nullable="false" />
+          <Property Name="naziv" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="datum" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="stavkeRacunas" Relationship="Self.FK_stavkeRacuna_meni" FromRole="meni" ToRole="stavkeRacuna" />
+          <NavigationProperty Name="proizvods" Relationship="Self.proizvodiMenija" FromRole="meni" ToRole="proizvod" />
+        </EntityType>
+        <EntityType Name="porez">
+          <Key>
+            <PropertyRef Name="idPoreza" />
+          </Key>
+          <Property Name="idPoreza" Type="Int32" Nullable="false" />
+          <Property Name="naziv" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="stopa" Type="Decimal" Precision="3" Scale="2" />
+          <NavigationProperty Name="proizvods" Relationship="Self.FK_proizvod_porez" FromRole="porez" ToRole="proizvod" />
+          <NavigationProperty Name="racuns" Relationship="Self.FK_racun_porez" FromRole="porez" ToRole="racun" />
+        </EntityType>
+        <EntityType Name="pravneOsobe">
+          <Key>
+            <PropertyRef Name="oibPravneOsobe" />
+          </Key>
+          <Property Name="oibPravneOsobe" Type="String" MaxLength="11" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="naziv" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="adresa" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="racuns" Relationship="Self.FK_racun_pravneOsobe" FromRole="pravneOsobe" ToRole="racun" />
+        </EntityType>
+        <EntityType Name="proizvod">
+          <Key>
+            <PropertyRef Name="idProizvod" />
+          </Key>
+          <Property Name="idProizvod" Type="Int32" Nullable="false" />
+          <Property Name="naziv" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="osnovica" Type="Decimal" Precision="15" Scale="2" />
+          <Property Name="idPoreza" Type="Int32" />
+          <NavigationProperty Name="porez" Relationship="Self.FK_proizvod_porez" FromRole="proizvod" ToRole="porez" />
+          <NavigationProperty Name="stavkeRacunas" Relationship="Self.FK_stavkeRacuna_proizvod" FromRole="proizvod" ToRole="stavkeRacuna" />
+          <NavigationProperty Name="menis" Relationship="Self.proizvodiMenija" FromRole="proizvod" ToRole="meni" />
+        </EntityType>
+        <EntityType Name="racun">
+          <Key>
+            <PropertyRef Name="idRacun" />
+          </Key>
+          <Property Name="idRacun" Type="Int32" Nullable="false" />
+          <Property Name="JIR" Type="String" MaxLength="36" FixedLength="true" Unicode="false" />
+          <Property Name="vrijeme" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ukupnoPrijePoreza" Type="Decimal" Precision="15" Scale="2" />
+          <Property Name="ukupnoPoslijePoreza" Type="Decimal" Precision="15" Scale="2" />
+          <Property Name="idKorisnik" Type="Int32" Nullable="false" />
+          <Property Name="oibPravneOsobe" Type="String" MaxLength="11" FixedLength="true" Unicode="false" />
+          <Property Name="idPoreza" Type="Int32" />
+          <NavigationProperty Name="korisnik" Relationship="Self.FK_racun_korisnik" FromRole="racun" ToRole="korisnik" />
+          <NavigationProperty Name="porez" Relationship="Self.FK_racun_porez" FromRole="racun" ToRole="porez" />
+          <NavigationProperty Name="pravneOsobe" Relationship="Self.FK_racun_pravneOsobe" FromRole="racun" ToRole="pravneOsobe" />
+          <NavigationProperty Name="stavkeRacunas" Relationship="Self.FK_stavkeRacuna_racun" FromRole="racun" ToRole="stavkeRacuna" />
+        </EntityType>
+        <EntityType Name="stavkeRacuna">
+          <Key>
+            <PropertyRef Name="idStavkeRacuna" />
+            <PropertyRef Name="idRacun" />
+          </Key>
+          <Property Name="idStavkeRacuna" Type="Int32" Nullable="false" />
+          <Property Name="idRacun" Type="Int32" Nullable="false" />
+          <Property Name="idProizvod" Type="Int32" />
+          <Property Name="idMeni" Type="Int32" />
+          <NavigationProperty Name="meni" Relationship="Self.FK_stavkeRacuna_meni" FromRole="stavkeRacuna" ToRole="meni" />
+          <NavigationProperty Name="proizvod" Relationship="Self.FK_stavkeRacuna_proizvod" FromRole="stavkeRacuna" ToRole="proizvod" />
+          <NavigationProperty Name="racun" Relationship="Self.FK_stavkeRacuna_racun" FromRole="stavkeRacuna" ToRole="racun" />
+        </EntityType>
+        <Association Name="FK_racun_korisnik">
+          <End Role="korisnik" Type="Self.korisnik" Multiplicity="1" />
+          <End Role="racun" Type="Self.racun" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="korisnik">
+              <PropertyRef Name="korisnikID" />
+            </Principal>
+            <Dependent Role="racun">
+              <PropertyRef Name="idKorisnik" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_stavkeRacuna_meni">
+          <End Role="meni" Type="Self.meni" Multiplicity="0..1" />
+          <End Role="stavkeRacuna" Type="Self.stavkeRacuna" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="meni">
+              <PropertyRef Name="idMeni" />
+            </Principal>
+            <Dependent Role="stavkeRacuna">
+              <PropertyRef Name="idMeni" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_proizvod_porez">
+          <End Role="porez" Type="Self.porez" Multiplicity="0..1" />
+          <End Role="proizvod" Type="Self.proizvod" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="porez">
+              <PropertyRef Name="idPoreza" />
+            </Principal>
+            <Dependent Role="proizvod">
+              <PropertyRef Name="idPoreza" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_racun_porez">
+          <End Role="porez" Type="Self.porez" Multiplicity="0..1" />
+          <End Role="racun" Type="Self.racun" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="porez">
+              <PropertyRef Name="idPoreza" />
+            </Principal>
+            <Dependent Role="racun">
+              <PropertyRef Name="idPoreza" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_racun_pravneOsobe">
+          <End Role="pravneOsobe" Type="Self.pravneOsobe" Multiplicity="0..1" />
+          <End Role="racun" Type="Self.racun" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="pravneOsobe">
+              <PropertyRef Name="oibPravneOsobe" />
+            </Principal>
+            <Dependent Role="racun">
+              <PropertyRef Name="oibPravneOsobe" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_stavkeRacuna_proizvod">
+          <End Role="proizvod" Type="Self.proizvod" Multiplicity="0..1" />
+          <End Role="stavkeRacuna" Type="Self.stavkeRacuna" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="proizvod">
+              <PropertyRef Name="idProizvod" />
+            </Principal>
+            <Dependent Role="stavkeRacuna">
+              <PropertyRef Name="idProizvod" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_stavkeRacuna_racun">
+          <End Role="racun" Type="Self.racun" Multiplicity="1" />
+          <End Role="stavkeRacuna" Type="Self.stavkeRacuna" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="racun">
+              <PropertyRef Name="idRacun" />
+            </Principal>
+            <Dependent Role="stavkeRacuna">
+              <PropertyRef Name="idRacun" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="proizvodiMenija">
+          <End Role="meni" Type="Self.meni" Multiplicity="*" />
+          <End Role="proizvod" Type="Self.proizvod" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="restoranDBEntities1" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="korisniks" EntityType="Self.korisnik" />
+          <EntitySet Name="menis" EntityType="Self.meni" />
+          <EntitySet Name="porezs" EntityType="Self.porez" />
+          <EntitySet Name="pravneOsobes" EntityType="Self.pravneOsobe" />
+          <EntitySet Name="proizvods" EntityType="Self.proizvod" />
+          <EntitySet Name="racuns" EntityType="Self.racun" />
+          <EntitySet Name="stavkeRacunas" EntityType="Self.stavkeRacuna" />
+          <AssociationSet Name="FK_racun_korisnik" Association="Self.FK_racun_korisnik">
+            <End Role="korisnik" EntitySet="korisniks" />
+            <End Role="racun" EntitySet="racuns" />
+          </AssociationSet>
+          <AssociationSet Name="FK_stavkeRacuna_meni" Association="Self.FK_stavkeRacuna_meni">
+            <End Role="meni" EntitySet="menis" />
+            <End Role="stavkeRacuna" EntitySet="stavkeRacunas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_proizvod_porez" Association="Self.FK_proizvod_porez">
+            <End Role="porez" EntitySet="porezs" />
+            <End Role="proizvod" EntitySet="proizvods" />
+          </AssociationSet>
+          <AssociationSet Name="FK_racun_porez" Association="Self.FK_racun_porez">
+            <End Role="porez" EntitySet="porezs" />
+            <End Role="racun" EntitySet="racuns" />
+          </AssociationSet>
+          <AssociationSet Name="FK_racun_pravneOsobe" Association="Self.FK_racun_pravneOsobe">
+            <End Role="pravneOsobe" EntitySet="pravneOsobes" />
+            <End Role="racun" EntitySet="racuns" />
+          </AssociationSet>
+          <AssociationSet Name="FK_stavkeRacuna_proizvod" Association="Self.FK_stavkeRacuna_proizvod">
+            <End Role="proizvod" EntitySet="proizvods" />
+            <End Role="stavkeRacuna" EntitySet="stavkeRacunas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_stavkeRacuna_racun" Association="Self.FK_stavkeRacuna_racun">
+            <End Role="racun" EntitySet="racuns" />
+            <End Role="stavkeRacuna" EntitySet="stavkeRacunas" />
+          </AssociationSet>
+          <AssociationSet Name="proizvodiMenija" Association="Self.proizvodiMenija">
+            <End Role="meni" EntitySet="menis" />
+            <End Role="proizvod" EntitySet="proizvods" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="restoranDBModelStoreContainer" CdmEntityContainer="restoranDBEntities1">
+          <EntitySetMapping Name="korisniks">
+            <EntityTypeMapping TypeName="restoranDBModel.korisnik">
+              <MappingFragment StoreEntitySet="korisnik">
+                <ScalarProperty Name="korisnikID" ColumnName="korisnikID" />
+                <ScalarProperty Name="korisnickoIme" ColumnName="korisnickoIme" />
+                <ScalarProperty Name="lozinka" ColumnName="lozinka" />
+                <ScalarProperty Name="ime" ColumnName="ime" />
+                <ScalarProperty Name="prezime" ColumnName="prezime" />
+                <ScalarProperty Name="tipKorisnika" ColumnName="tipKorisnika" />
+                <ScalarProperty Name="oib" ColumnName="oib" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="menis">
+            <EntityTypeMapping TypeName="restoranDBModel.meni">
+              <MappingFragment StoreEntitySet="meni">
+                <ScalarProperty Name="idMeni" ColumnName="idMeni" />
+                <ScalarProperty Name="naziv" ColumnName="naziv" />
+                <ScalarProperty Name="datum" ColumnName="datum" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="porezs">
+            <EntityTypeMapping TypeName="restoranDBModel.porez">
+              <MappingFragment StoreEntitySet="porez">
+                <ScalarProperty Name="idPoreza" ColumnName="idPoreza" />
+                <ScalarProperty Name="naziv" ColumnName="naziv" />
+                <ScalarProperty Name="stopa" ColumnName="stopa" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="pravneOsobes">
+            <EntityTypeMapping TypeName="restoranDBModel.pravneOsobe">
+              <MappingFragment StoreEntitySet="pravneOsobe">
+                <ScalarProperty Name="oibPravneOsobe" ColumnName="oibPravneOsobe" />
+                <ScalarProperty Name="naziv" ColumnName="naziv" />
+                <ScalarProperty Name="adresa" ColumnName="adresa" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="proizvods">
+            <EntityTypeMapping TypeName="restoranDBModel.proizvod">
+              <MappingFragment StoreEntitySet="proizvod">
+                <ScalarProperty Name="idProizvod" ColumnName="idProizvod" />
+                <ScalarProperty Name="naziv" ColumnName="naziv" />
+                <ScalarProperty Name="osnovica" ColumnName="osnovica" />
+                <ScalarProperty Name="idPoreza" ColumnName="idPoreza" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="racuns">
+            <EntityTypeMapping TypeName="restoranDBModel.racun">
+              <MappingFragment StoreEntitySet="racun">
+                <ScalarProperty Name="idRacun" ColumnName="idRacun" />
+                <ScalarProperty Name="JIR" ColumnName="JIR" />
+                <ScalarProperty Name="vrijeme" ColumnName="vrijeme" />
+                <ScalarProperty Name="ukupnoPrijePoreza" ColumnName="ukupnoPrijePoreza" />
+                <ScalarProperty Name="ukupnoPoslijePoreza" ColumnName="ukupnoPoslijePoreza" />
+                <ScalarProperty Name="idKorisnik" ColumnName="idKorisnik" />
+                <ScalarProperty Name="oibPravneOsobe" ColumnName="oibPravneOsobe" />
+                <ScalarProperty Name="idPoreza" ColumnName="idPoreza" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="stavkeRacunas">
+            <EntityTypeMapping TypeName="restoranDBModel.stavkeRacuna">
+              <MappingFragment StoreEntitySet="stavkeRacuna">
+                <ScalarProperty Name="idStavkeRacuna" ColumnName="idStavkeRacuna" />
+                <ScalarProperty Name="idRacun" ColumnName="idRacun" />
+                <ScalarProperty Name="idProizvod" ColumnName="idProizvod" />
+                <ScalarProperty Name="idMeni" ColumnName="idMeni" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="proizvodiMenija" TypeName="restoranDBModel.proizvodiMenija" StoreEntitySet="proizvodiMenija">
+            <EndProperty Name="meni">
+              <ScalarProperty Name="idMeni" ColumnName="idMeni" />
+            </EndProperty>
+            <EndProperty Name="proizvod">
+              <ScalarProperty Name="idProizvod" ColumnName="idProizvod" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
