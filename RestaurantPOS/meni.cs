@@ -29,5 +29,7 @@ namespace RestaurantPOS
         public virtual ICollection<stavkeRacuna> stavkeRacunas { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<proizvod> proizvods { get; set; }
+        nesto noest
+
     }
 }
